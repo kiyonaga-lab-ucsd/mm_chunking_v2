@@ -150,7 +150,7 @@ const all_trial_types = [
 ];
 
 // how many trials per cell do we want?
-const nTrialsPerCell = 9; // we want 9
+const nTrialsPerCell = 12; // we want 12
 const total_trials = nTrialsPerCell*all_trial_types.length*2*2; // nTrialsPerCell * 8 trial types * 2 retrocue pair options * 2 probe options
 const n_practice_trials = 16;
 
@@ -197,7 +197,6 @@ timeline.push({
     show_clickable_nav: true,
     button_label_next: 'Continue',
 });
-*/
 
 // Practice trials
 timeline.push({
@@ -227,7 +226,9 @@ timeline.push({
     randomize_order: false,
 });
 
-// Practice trials
+*/
+
+// Practice trials end
 timeline.push({
     type: jsPsychInstructions,
     pages: ['<p>You have completed the practice. Press "Continue" to proceed to the main task.</p>',
