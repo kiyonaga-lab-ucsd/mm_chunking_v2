@@ -207,7 +207,7 @@ var jsPsychMMChunking = (function (jsPsych) {
 
             // NEW FOR EXP2: two leftwards vs. rightward items are seperated more and closer vertically
             for (let i = 0; i < num_placeholders; i++) {
-                const angle = (Math.PI * 2 / num_placeholders) * i + Math.PI / 4;
+                const angle = (Math.PI * 2 / num_placeholders) * i + Math.PI * 5 / 4;
                 const top  = center + Math.cos(angle) * radius * placeholder_vertical_scale - item_size / 2;
                 const sideOffset = Math.sin(angle) < 0
                     ? -placeholder_horizontal_spread
@@ -236,8 +236,10 @@ var jsPsychMMChunking = (function (jsPsych) {
 
             /* ---- Assign values & positions ---- */
             const allPositions = Array.from({ length: num_placeholders }, (_, i) => i);
-            const positions = self.jsPsych.randomization.shuffle([...allPositions]).slice(0, set_size);
-
+            const positions = [
+                ...self.jsPsych.randomization.shuffle([0, 1]),
+                ...self.jsPsych.randomization.shuffle([2, 3])
+            ];
             const values = trial.item_values.length === set_size
                 ? trial.item_values
                 : generateValues(trial.stim_types, trial.min_difference_color, trial.min_difference_ori);
