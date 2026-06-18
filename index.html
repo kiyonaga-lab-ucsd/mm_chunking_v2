@@ -64,6 +64,8 @@ const DEBUG = {
       max_blocks: 1 // do only first ${max_blocks} blocks
     };
 
+DEBUG.enabled = false
+
 // Initialize timeline
 const timeline = [];
 
@@ -106,10 +108,7 @@ function buildTrialVariables(blockType, nTrialsPerCell) {
             } else {
                 return ['orientation', 'orientation', 'color', 'color'];
             }
-        } // same category within each group
-
-        // heterogenous: different cateogory within each group
-        return ["color", "orientation", "color", "orientation"]; 
+        }
     };
 
     const stimTypes = getStimTypes(feature);
@@ -135,30 +134,25 @@ function buildTrialVariables(blockType, nTrialsPerCell) {
     return vars;
 }
 
-// all trial types
-// color_within:
-// color_across:
-// orientation_within: 
-// etc
 const all_trial_types = [
-    'color_within',
-    'color_across',
-    'orientation_within',
-    'orientation_across',
-    'homogenous_within',
-    'homogenous_across'
+    'color_within', // cue both items from same temporal set, both items are colors
+    'color_across', // cue one item from each temporal set, both items are colors
+    'orientation_within', // cue both items from same temporal set, both items are orientations
+    'orientation_across', // cue one item from each temporal set, both items are orientations
+    'homogenous_within', // cue both items from same temporal set, items are from same category but could be either colors or orientations
+    'homogenous_across' // cue one item from each temporal set, items are from same category but could be either colors or orientations
 ];
 
 // how many trials per cell do we want?
 const nTrialsPerCell = 12; // we want 12
-const total_trials = nTrialsPerCell*all_trial_types.length*2*2; // nTrialsPerCell * 8 trial types * 2 retrocue pair options * 2 probe options
+const total_trials = nTrialsPerCell * all_trial_types.length * 2 * 2; // (nTrialsPerCell = 12) * 6 trial types * 2 retrocue pair options * 2 probe options = 288 trials
 const n_practice_trials = 16;
 
 const allTrialVars = jsPsych.randomization.shuffle(
     all_trial_types.flatMap(bt => buildTrialVariables(bt, nTrialsPerCell))
 );
 
-// Split into blocks of 32
+// Split into blocks of 32, hence 288 / 32 = 9 blocks
 let blocks = [];
 const blockSize = 32;
 if (total_trials % blockSize != 0){
@@ -181,22 +175,23 @@ function update_progress_bar() {
     jsPsych.setProgressBar(trial_count/total_trials);
 }
 
-/*
 timeline.push({
     type: jsPsychInstructions,
     pages: ['<p> Welcome to this experiment!</p><p><strong>In order to participate, you must be on a laptop or desktop computer.</strong></p>',
         '<p> In this experiment, you will be briefly remembering some colors and line orientations. </p><p> You will complete ' + total_trials + ' trials, each of which lasts around 5 seconds. These trials will be split across ' + blocks.length + ' blocks, and you can feel free to take breaks in between blocks. The entire experiment should not last longer than one hour. </p><p> <strong> Please do not participate if you do not have normal color vision. <strong> </p>',
-        '<p> Before each trial starts, you will see four placeholder circles. Shortly after, two of these four circles will be filled by colors of various shades, or lines of various orientations, or a combination of a shade and an orientation. Then, the two items in these two circles will dissapear, and two new items will appear in the other two circles. <p><p> Your task is to remember the item that was shown in each location. If it was a color, remember its shade. If it was a line, remember its orientation. Please pay close attention throughout the entire trial, since the items will be presented very briefly. <p>',
-        '<p> For example, you may see a trial like this. The two circles on the left are first filled by one color and one orientation. Then, after a delay, where everything dissapears, the two circles on the right are then filled by one color and one orientation. </p><p align="center"><img src="instruction_screenshots/example_present.png" width="500" border=0></p>',
+        '<p> Before each trial starts, you will see four placeholder circles. Shortly after, the two circles on the left will be filled by colors of various shades, or lines of various orientations. Then, these two items will dissapear, and two new items will appear on the cirlces on the right. <p><p> Your task is to remember the item that was shown in each location. If it was a color, remember its shade. If it was a line, remember its orientation. Please pay close attention throughout the entire trial, since the items will be presented very briefly. <p>',
+        '<p> For example, you may see a trial like this. The two circles on the left are first filled by two orientation bars. Then, after a delay, where everything dissapears, the two circles on the right are then filled by two colors. </p><p align="center"><img src="instruction_screenshots/example_present.png" width="500" border=0></p>',
         '<p> During the task, you may be tempted to remember the colors by repeating the name of that color to yourself. However, we are interested in your visual, not verbal, memory, so please avoid doing so. If you still find yourself from repeating the name of a color to yourself, we suggest you repeat the word "the" over and over again. This will help prevent you from using words to describe and remember the colors. </p>',
         '<p> After all of the four items are presented, there will be a "cue" period, where two of the four placeholder circles will have a darker border. Going forward, you will only need to continue remembering the items in those two circles, so you can essentially "drop" the items from the other two circles from your memory. To enhance your memory performance, please do your best to take advantage of this fact, as opposed to remembering all four items throughout the entire trial. </p>',
-        '<p> Continuing our previous example, the top left and bottom right circles have been cued. This means we only need to remember the items presented in these two circles (in this case, it was a line that points upwards and slightly towards the left for the top left circle, and a color that was light green in the bottom right circle) </p><p align="center"><img src="instruction_screenshots/example_retro_cue.png" width="300" border=0></p>',
+        '<p> Continuing our previous example, the top left and bottom right circles have been cued. This means we only need to remember the two items presented in these two circles </p><p align="center"><img src="instruction_screenshots/example_retro_cue.png" width="300" border=0></p>',
         '<p> These "cues" will then dissapear, and almost immediately after, one of the two placeholder circles that were just cued will be darkened again. Your task will be to report the shade of the color, or orientation of the bar, that was shown in that location. </p><p> This will be done through two reponse wheels that now appear. To report the shade of a color, you can hover over the corresponding color on the 360 degrees color wheel. Once you find the color that you believe matches the color that was presented in the darkened location, you can click on that color on the wheel to lock in your answer. Similarly, to report an orientation, you click on the corresponding orientation on the orientation wheel (which is out of 180 degrees, since lines are symmetrical). </p>',
-        '<p> To finish our previous example, let us say the top left circle was the one that you are asked to respond for. Then, you would drag your mouse to the region on the orientation wheel (the black one, that spans across 180 degrees) that corresponds to the orientation the line was pointing towards. Once you are satisfied, you can click on the orientation wheel to lock in your response. If you are supposed to report a color, you should do the same thing, except hover over and click on the color wheel. </p><p align="center"><img src="instruction_screenshots/example_report.png" width="300" border=0></p><p> Very importantly, please indicate your response as quickly as possible. <strong>You will only be given up to 3 seconds to do so.</strong> Therefore, you do not need to strive for perfection, but rather, please click on the wheels once you are relatively satisfied with your answer. </p>'
+        '<p> To finish our previous example, let us say the bottom right circle was the one that you are asked to respond for. Then, you would drag your mouse to the region on the 360 degrees color wheel (since the item presented at the bottom right was a color) that corresponds to the shade the color was. A light blue color was presented at that location, so you should drag your mouse to the light blue area on the color wheel. Once you are satisfied, you can click on the color wheel to lock in your response. If you are supposed to report an orientation instead, you should do the same thing, except you would hover over and click on the black orientation wheel which is 180 degrees. </p><p align="center"><img src="instruction_screenshots/example_report.png" width="300" border=0></p><p> Very importantly, please indicate your response as quickly as possible. You do not need to strive for perfection, but rather, please click on the wheels once you are relatively satisfied with your answer. </p>'
     ],
     show_clickable_nav: true,
     button_label_next: 'Continue',
 });
+
+/*
 
 // Practice trials
 timeline.push({
