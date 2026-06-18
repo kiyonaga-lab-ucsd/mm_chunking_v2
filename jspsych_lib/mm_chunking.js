@@ -53,8 +53,6 @@ var jsPsychMMChunking = (function (jsPsych) {
             num_placeholders: { type: jsPsych.ParameterType.INT, default: 4,   description: 'Number of placeholder locations.' },
             item_size: { type: jsPsych.ParameterType.INT, default: 90,  description: 'Diameter of each item circle (px).' },
             radius: { type: jsPsych.ParameterType.INT, default: 160, description: 'Radius of the placeholder ring (px).' },
-            placeholder_horizontal_spread: { type: jsPsych.ParameterType.INT, default: 25, description: 'Extra horizontal spacing between left and right placeholder groups (px).' },
-            placeholder_vertical_scale: { type: jsPsych.ParameterType.FLOAT, default: 0.6, description: 'Multiplier for vertical spacing between placeholder rows.' },
             line_width: { type: jsPsych.ParameterType.INT, default: 10,   description: 'Width of orientation bar (px).' },
             line_length_frac: { type: jsPsych.ParameterType.FLOAT, default: 0.9, description: 'Fraction of item_size used as bar length.' },
 
@@ -191,14 +189,14 @@ var jsPsychMMChunking = (function (jsPsych) {
             }
 
             // Build the layout
-            const { item_size, radius, num_placeholders, set_size, placeholder_horizontal_spread, placeholder_vertical_scale } = trial;
-            const boxSize = radius * 2 + item_size * 2 + 100 + placeholder_horizontal_spread * 2;
+            const { item_size, radius, num_placeholders, set_size } = trial;
+            const boxSize = radius * 2 + item_size * 2 + 100;
             const center  = boxSize / 2;
 
             // Color ring sits just outside the placeholder ring.
             // Orientation ring sits outside the color ring.
-            const colorWheelRadius = radius + item_size + 20;
-            const oriWheelRadius   = colorWheelRadius + 40;
+            const colorWheelRadius = radius + item_size + 10;
+            const oriWheelRadius   = colorWheelRadius + 30;
 
             /* ---- Build the HTML ----------------------------------- */
             let html = `<div id="rc-box" style="
@@ -208,11 +206,8 @@ var jsPsychMMChunking = (function (jsPsych) {
             // NEW FOR EXP2: two leftwards vs. rightward items are seperated more and closer vertically
             for (let i = 0; i < num_placeholders; i++) {
                 const angle = (Math.PI * 2 / num_placeholders) * i + Math.PI * 5 / 4;
-                const top  = center + Math.cos(angle) * radius * placeholder_vertical_scale - item_size / 2;
-                const sideOffset = Math.sin(angle) < 0
-                    ? -placeholder_horizontal_spread
-                    : placeholder_horizontal_spread;
-                const left = center + Math.sin(angle) * radius + sideOffset - item_size / 2;
+                const top  = center + Math.cos(angle) * radius - item_size / 2;
+                const left = center + Math.sin(angle) * radius - item_size / 2;
 
                 // The circle itself (filled for color, transparent for orientation)
                 html += `<div id="rc-item-${i}" class="rc-placeholder"
