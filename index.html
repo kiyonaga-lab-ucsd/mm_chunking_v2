@@ -49,7 +49,7 @@ const jsPsych = initJsPsych({
 
 // Generate a truly random participant ID
 const unique_participant_id = jsPsych.randomization.randomID(10);
-const filename = `mm_chunking_v1_${unique_participant_id}.csv`;
+const filename = `mm_chunking_v2_${unique_participant_id}.csv`;
 jsPsych.data.addProperties({ unique_participant_id });
 
 // Get the SONA id from url parameters
@@ -144,12 +144,26 @@ const all_trial_types = [
 ];
 
 // how many trials per cell do we want?
-const nTrialsPerCell = 12; // we want 12
-const total_trials = nTrialsPerCell * all_trial_types.length * 2 * 2; // (nTrialsPerCell = 12) * 6 trial types * 2 retrocue pair options * 2 probe options = 288 trials
+// Ratio target: 1/4 pure color, 1/4 pure orientation, 1/2 color+orientation ("homogenous")
+// Each block type contributes n * 4 trials (2 retrocue pairs x 2 probe positions),
+// and there are 2 block types (within/across) per category, so setting the
+// "homogenous" n to double the pure-feature n gives exactly a 1:1:2 ratio.
+const nTrialsPerCell_samecat   = 9;  // color_within/across, orientation_within/across
+const nTrialsPerCell_diffcat  = 18; // homogenous_within/across
+
+function getNTrialsForType(blockType) {
+    const feature = blockType.split('_')[0];
+    return feature === 'homogenous' ? nTrialsPerCell_diffcat : nTrialsPerCell_samecat;
+}
+
+// total = (4 same types * 9 * 4) + (2 diff types * 18 * 4) = 144 + 144 = 288
+const total_trials = all_trial_types.reduce(
+    (sum, bt) => sum + getNTrialsForType(bt) * 4, 0
+);
 const n_practice_trials = 16;
 
 const allTrialVars = jsPsych.randomization.shuffle(
-    all_trial_types.flatMap(bt => buildTrialVariables(bt, nTrialsPerCell))
+    all_trial_types.flatMap(bt => buildTrialVariables(bt, getNTrialsForType(bt)))
 );
 
 // Split into blocks of 32, hence 288 / 32 = 9 blocks
@@ -271,7 +285,7 @@ timeline.push({
 timeline.push({
     type: jsPsychPipe,
     action: "save",
-    experiment_id: "LZhfcBUZnJmU",
+    experiment_id: "Hx6GxC7mZk8P",
     filename: filename,
     data_string: () => jsPsych.data.get().csv()
 });
