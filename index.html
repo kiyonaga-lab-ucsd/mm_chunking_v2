@@ -145,14 +145,14 @@ const all_trial_types = [
 // Ratio target: cccc:oooo:ccoo:oocc = 1:1:1:1
 // This means pure features (cccc, oooo) make up half of all trials, while mixed features (ccoo, oocc) make up the other half. 
 // Each block type contributes n * 4 trials (2 retrocue pairs x 2 probe positions)
-const nTrialsPerCell = 2
+const nTrialsPerCell = 9
 
 // total = 8 trial types * 4 trials per type * nTrialsPerCell = 288 trials
 const total_trials = all_trial_types.reduce(
     (sum, bt) => sum + nTrialsPerCell * 4, 0
 );
 
-const n_practice_trials = 1;
+const n_practice_trials = 16;
 
 const allTrialVars = jsPsych.randomization.shuffle(
     all_trial_types.flatMap(bt => buildTrialVariables(bt, nTrialsPerCell))
