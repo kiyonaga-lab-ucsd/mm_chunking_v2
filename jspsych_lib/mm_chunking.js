@@ -203,7 +203,6 @@ var jsPsychMMChunking = (function (jsPsych) {
                 width:${boxSize}px; height:${boxSize}px;
                 background:${trial.bg_color};">`;
 
-            // NEW FOR EXP2: two leftwards vs. rightward items are seperated more and closer vertically
             for (let i = 0; i < num_placeholders; i++) {
                 const angle = (Math.PI * 2 / num_placeholders) * i + Math.PI * 5 / 4;
                 const top  = center + Math.cos(angle) * radius - item_size / 2;

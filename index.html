@@ -79,7 +79,7 @@ const timeline = [];
  * Build stim_types and retrocue_indices for each block type.
  *
  * Block type naming convention: <feature>_<cue_structure>
- *   feature:       color | orientation | mixed
+ *   feature:       cccc | oooo | ccoo | oocc
  *   cue_structure: within (cue both from same temporal set)
  *                  across (cue one from each temporal set)
  *
@@ -95,23 +95,19 @@ const timeline = [];
 function buildTrialVariables(blockType, nTrialsPerCell) {
     const vars = [];
 
-    const [feature, cueStructure] = blockType.split('_');
+    const [features, cueStructure] = blockType.split('_');
 
-    const getStimTypes = (feature) => {
-        if (feature === 'color')       return ['color', 'color', 'color', 'color'];
+    const getStimTypes = (features) => {
+        if (features === 'cccc')       return ['color', 'color', 'color', 'color'];
         
-        if (feature === 'orientation') return ['orientation', 'orientation', 'orientation', 'orientation'];
+        if (features === 'oooo')       return ['orientation', 'orientation', 'orientation', 'orientation'];
         
-        if (feature === 'homogenous'){ 
-            if (Math.random() < 0.5) {
-                return ['color', 'color', 'orientation', 'orientation'];
-            } else {
-                return ['orientation', 'orientation', 'color', 'color'];
-            }
-        }
+        if (features === 'ccoo')       return ['color', 'color', 'orientation', 'orientation'];
+
+        if (features === 'oocc')       return ['orientation', 'orientation', 'color', 'color'];
     };
 
-    const stimTypes = getStimTypes(feature);
+    const stimTypes = getStimTypes(features);
 
     // Within: cue both items from the same temporal set
     // Across: cue one item from each temporal set
@@ -135,35 +131,31 @@ function buildTrialVariables(blockType, nTrialsPerCell) {
 }
 
 const all_trial_types = [
-    'color_within', // cue both items from same temporal set, both items are colors
-    'color_across', // cue one item from each temporal set, both items are colors
-    'orientation_within', // cue both items from same temporal set, both items are orientations
-    'orientation_across', // cue one item from each temporal set, both items are orientations
-    'homogenous_within', // cue both items from same temporal set, items are from same category but could be either colors or orientations
-    'homogenous_across' // cue one item from each temporal set, items are from same category but could be either colors or orientations
+    'cccc_within', // cue both items from same temporal set, both items are colors
+    'cccc_across', // cue one item from each temporal set, both items are colors
+    'oooo_within', // cue both items from same temporal set, both items are orientations
+    'oooo_across', // cue one item from each temporal set, both items are orientations
+    'ccoo_within', // cue both items from same temporal set, first set are colors, second set are orientations
+    'ccoo_across', // cue one item from each temporal set, first set are colors, second set are orientations
+    'oocc_within', // cue both items from same temporal set, first set are orientations, second set are colors
+    'oocc_across' // cue one item from each temporal set, first set are orientations, second set are colors
 ];
 
 // how many trials per cell do we want?
-// Ratio target: 1/4 pure color, 1/4 pure orientation, 1/2 color+orientation ("homogenous")
-// Each block type contributes n * 4 trials (2 retrocue pairs x 2 probe positions),
-// and there are 2 block types (within/across) per category, so setting the
-// "homogenous" n to double the pure-feature n gives exactly a 1:1:2 ratio.
-const nTrialsPerCell_samecat   = 9;  // color_within/across, orientation_within/across
-const nTrialsPerCell_diffcat  = 18; // homogenous_within/across
+// Ratio target: cccc:oooo:ccoo:oocc = 1:1:1:1
+// This means pure features (cccc, oooo) make up half of all trials, while mixed features (ccoo, oocc) make up the other half. 
+// Each block type contributes n * 4 trials (2 retrocue pairs x 2 probe positions)
+const nTrialsPerCell = 2
 
-function getNTrialsForType(blockType) {
-    const feature = blockType.split('_')[0];
-    return feature === 'homogenous' ? nTrialsPerCell_diffcat : nTrialsPerCell_samecat;
-}
-
-// total = (4 same types * 9 * 4) + (2 diff types * 18 * 4) = 144 + 144 = 288
+// total = 8 trial types * 4 trials per type * nTrialsPerCell = 288 trials
 const total_trials = all_trial_types.reduce(
-    (sum, bt) => sum + getNTrialsForType(bt) * 4, 0
+    (sum, bt) => sum + nTrialsPerCell * 4, 0
 );
-const n_practice_trials = 16;
+
+const n_practice_trials = 1;
 
 const allTrialVars = jsPsych.randomization.shuffle(
-    all_trial_types.flatMap(bt => buildTrialVariables(bt, getNTrialsForType(bt)))
+    all_trial_types.flatMap(bt => buildTrialVariables(bt, nTrialsPerCell))
 );
 
 // Split into blocks of 32, hence 288 / 32 = 9 blocks
