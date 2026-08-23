@@ -95,7 +95,7 @@ const timeline = [];
 function buildTrialVariables(blockType, nTrialsPerCell) {
     const vars = [];
 
-    const [name, cueStructure, features] = blockType.split('_');
+    const [category, cueStructure, features] = blockType.split('_');
 
     const getStimTypes = (features) => {
         if (features === 'cccc')       return ['color', 'color', 'color', 'color'];
@@ -184,7 +184,7 @@ function update_progress_bar() {
 timeline.push({
     type: jsPsychInstructions,
     pages: ['<p> Welcome to this experiment!</p><p><strong>In order to participate, you must be on a laptop or desktop computer.</strong></p>',
-        '<p> In this experiment, you will be briefly remembering some colors and line orientations. </p><p> You will complete ' + total_trials + ' trials, each of which lasts around 5 seconds. These trials will be split across ' + blocks.length + ' blocks, and you can feel free to take breaks in between blocks. The entire experiment should not last longer than one hour. </p><p> <strong> Please do not participate if you do not have normal color vision. <strong> </p>',
+        '<p> In this experiment, you will be briefly remembering some colors and line orientations. </p><p> You will complete ' + total_trials + ' trials, each of which lasts around 8 seconds. These trials will be split across ' + blocks.length + ' blocks, and you can feel free to take breaks in between blocks. Not counting break time, the entire experiment should take about 45 minutes. </p><p> <strong> Please do not participate if you do not have normal color vision. <strong> </p>',
         '<p> Before each trial starts, you will see four placeholder circles. Shortly after, the two circles on the left will be filled by colors of various shades, or lines of various orientations. Then, these two items will dissapear, and two new items will appear on the cirlces on the right. <p><p> Your task is to remember the item that was shown in each location. If it was a color, remember its shade. If it was a line, remember its orientation. Please pay close attention throughout the entire trial, since the items will be presented very briefly. <p>',
         '<p> For example, you may see a trial like this. The two circles on the left are first filled by two orientation bars. Then, after a delay, where everything dissapears, the two circles on the right are then filled by two colors. </p><p align="center"><img src="instruction_screenshots/example_present.png" width="500" border=0></p>',
         '<p> During the task, you may be tempted to remember the colors by repeating the name of that color to yourself. However, we are interested in your visual, not verbal, memory, so please avoid doing so. If you still find yourself from repeating the name of a color to yourself, we suggest you repeat the word "the" over and over again. This will help prevent you from using words to describe and remember the colors. </p>',
