@@ -95,7 +95,7 @@ const timeline = [];
 function buildTrialVariables(blockType, nTrialsPerCell) {
     const vars = [];
 
-    const [features, cueStructure] = blockType.split('_');
+    const [name, cueStructure, features] = blockType.split('_');
 
     const getStimTypes = (features) => {
         if (features === 'cccc')       return ['color', 'color', 'color', 'color'];
@@ -131,14 +131,14 @@ function buildTrialVariables(blockType, nTrialsPerCell) {
 }
 
 const all_trial_types = [
-    'cccc_within', // cue both items from same temporal set, both items are colors
-    'cccc_across', // cue one item from each temporal set, both items are colors
-    'oooo_within', // cue both items from same temporal set, both items are orientations
-    'oooo_across', // cue one item from each temporal set, both items are orientations
-    'ccoo_within', // cue both items from same temporal set, first set are colors, second set are orientations
-    'ccoo_across', // cue one item from each temporal set, first set are colors, second set are orientations
-    'oocc_within', // cue both items from same temporal set, first set are orientations, second set are colors
-    'oocc_across' // cue one item from each temporal set, first set are orientations, second set are colors
+    'colors_within_cccc', // cue both items from same temporal set, both items are colors
+    'colors_across_cccc', // cue one item from each temporal set, both items are colors
+    'orientations_within_oooo', // cue both items from same temporal set, both items are orientations
+    'orientations_across_oooo', // cue one item from each temporal set, both items are orientations
+    'homogenous_within_ccoo', // cue both items from same temporal set, first set are colors, second set are orientations
+    'homogenous_across_ccoo', // cue one item from each temporal set, first set are colors, second set are orientations
+    'homogenous_within_oocc', // cue both items from same temporal set, first set are orientations, second set are colors
+    'homogenous_across_oocc' // cue one item from each temporal set, first set are orientations, second set are colors
 ];
 
 // how many trials per cell do we want?
